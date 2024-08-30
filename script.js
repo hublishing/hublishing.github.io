@@ -162,15 +162,25 @@ function updateSecondaryTypeSelect(primaryType) {
     secondarySelect.innerHTML = '<option value="">세부 타입 선택</option>'; // 초기화
 
     if (primaryType) {
-        fetchAllTypes().then(types => {
-            types.forEach(type => {
-                if (type.name !== primaryType) {
-                    const option = document.createElement('option');
-                    option.value = type.name;
-                    option.textContent = type.name;
-                    secondarySelect.appendChild(option);
-                }
-            });
+        const secondaryTypes = new Set();
+
+        // 현재 필터링된 포켓몬에서 primaryType이 아닌 타입을 세부 타입으로 수집
+        allPokemonData.forEach(pokemon => {
+            const types = pokemon.types.map(t => t.type.name);
+            if (types.includes(primaryType)) {
+                types.forEach(type => {
+                    if (type !== primaryType) {
+                        secondaryTypes.add(type);
+                    }
+                });
+            }
+        });
+
+        secondaryTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            secondarySelect.appendChild(option);
         });
 
         secondarySelect.disabled = false; // 활성화
