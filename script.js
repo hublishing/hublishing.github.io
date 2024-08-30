@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
             primarySelect.appendChild(option);
         });
 
+        // 첫 번째 드롭다운에서 타입을 선택할 때 두 번째 드롭다운을 업데이트
         primarySelect.addEventListener('change', () => {
             const selectedType = primarySelect.value;
             updateSecondaryTypeSelect(selectedType);
@@ -121,8 +122,16 @@ function filterPokemonList(query) {
 function fetchAllTypes() {
     const apiUrl = 'https://pokeapi.co/api/v2/type';
     return fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => data.results)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch types');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Fetched types:', data.results); // 콘솔 로그 추가
+            return data.results;
+        })
         .catch(error => console.error('Error fetching Pokemon types:', error));
 }
 
