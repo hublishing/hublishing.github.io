@@ -1,4 +1,10 @@
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded and parsed');
+    fetchPokemonList(); // 페이지 로드 시 포켓몬 리스트를 불러옵니다.
+});
+
 function fetchPokemonList() {
+    console.log('Fetching Pokemon list...');
     const apiUrl = 'https://pokeapi.co/api/v2/pokemon?limit=151'; // 첫 번째 세대 포켓몬 151개를 가져옵니다.
     fetch(apiUrl)
         .then(response => {
@@ -32,4 +38,29 @@ function fetchPokemonList() {
             }
         })
         .catch(error => console.error('Error fetching the Pokemon list:', error));
+}
+
+function fetchPokemonDetails(name) {
+    console.log(`Fetching details for ${name}...`);
+    const apiUrl = `https://pokeapi.co/api/v2/pokemon/${name}`;
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Pokemon details:', data);
+            const pokemonDetails = document.getElementById('pokemonDetails');
+            pokemonDetails.innerHTML = `
+                <h2>${data.name}</h2>
+                <img src="${data.sprites.front_default}" alt="${data.name}" />
+                <p>Height: ${data.height}</p>
+                <p>Weight: ${data.weight}</p>
+                <p>Base Experience: ${data.base_experience}</p>
+                <p>Abilities: ${data.abilities.map(ability => ability.ability.name).join(', ')}</p>
+                <p>Types: ${data.types.map(type => type.type.name).join(', ')}</p>
+                <p>Stats:</p>
+                <ul>
+                    ${data.stats.map(stat => `<li>${stat.stat.name}: ${stat.base_stat}</li>`).join('')}
+                </ul>
+            `;
+        })
+        .catch(error => console.error('Error fetching Pokemon details:', error));
 }
