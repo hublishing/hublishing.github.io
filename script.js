@@ -8,15 +8,20 @@ document.addEventListener('DOMContentLoaded', function() {
         filterPokemonList(query);
     });
 
-    // 타입별 필터링 버튼 생성 및 이벤트 리스너 추가
+    // 타입 드롭다운 이벤트 리스너 추가
     fetchAllTypes().then(types => {
-        const filterContainer = document.getElementById('typeFilters');
+        const primarySelect = document.getElementById('primaryTypeSelect');
         types.forEach(type => {
-            const button = document.createElement('button');
-            button.textContent = type.name;
-            button.className = 'type-filter-button';
-            button.addEventListener('click', () => toggleTypeFilter(type.name));
-            filterContainer.appendChild(button);
+            const option = document.createElement('option');
+            option.value = type.name;
+            option.textContent = type.name;
+            primarySelect.appendChild(option);
+        });
+
+        primarySelect.addEventListener('change', () => {
+            const selectedType = primarySelect.value;
+            updateSecondaryTypeSelect(selectedType);
+            filterPokemonList(document.getElementById('searchInput').value.toLowerCase());
         });
     });
 });
@@ -35,16 +40,11 @@ function fetchPokemonList() {
             return response.json();
         })
         .then(data => {
-            const pokemonList = document.getElementById('pokemonList');
             const fetches = data.results.map(pokemon => fetch(pokemon.url).then(res => res.json()));
 
             Promise.all(fetches).then(pokemonDataArray => {
-                // 전체 포켓몬 데이터 저장
                 allPokemonData = pokemonDataArray;
-
-                // ID 순으로 정렬
                 pokemonDataArray.sort((a, b) => a.id - b.id);
-                
                 renderPokemonList(pokemonDataArray);
             });
         })
@@ -53,7 +53,7 @@ function fetchPokemonList() {
 
 function renderPokemonList(pokemonDataArray) {
     const pokemonList = document.getElementById('pokemonList');
-    pokemonList.innerHTML = ''; // 기존 목록 초기화
+    pokemonList.innerHTML = '';
 
     pokemonDataArray.forEach(pokemonData => {
         const pokemonCard = document.createElement('div');
@@ -74,17 +74,10 @@ function renderPokemonList(pokemonDataArray) {
 }
 
 function fetchPokemonDetails(name) {
-    console.log(`Fetching details for ${name}...`);
     const apiUrl = `https://pokeapi.co/api/v2/pokemon/${name}`;
     fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch details for ' + name);
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log('Pokemon details:', data);
             const pokemonDetails = document.getElementById('pokemonDetails');
             pokemonDetails.innerHTML = `
                 <h2>${data.id}. ${data.name}</h2>
@@ -97,7 +90,7 @@ function fetchPokemonDetails(name) {
                 <p>Forms: ${data.forms.map(form => form.name).join(', ')}</p>
                 <p>Game Indices: ${data.game_indices.map(index => index.version.name).join(', ')}</p>
                 <p>Location Encounters: ${data.location_area_encounters}</p>
-                <p>Moves: ${data.moves.map(move => move.move.name).slice(0, 5).join(', ')}...</p> <!-- 처음 5개의 기술만 표시 -->
+                <p>Moves: ${data.moves.map(move => move.move.name).slice(0, 5).join(', ')}...</p>
                 <p>Stats:</p>
                 <ul>
                     ${data.stats.map(stat => `<li>${stat.stat.name}: ${stat.base_stat}</li>`).join('')}
@@ -107,37 +100,50 @@ function fetchPokemonDetails(name) {
         .catch(error => console.error('Error fetching Pokemon details:', error));
 }
 
-// 검색어에 맞춰 포켓몬 목록 필터링
 function filterPokemonList(query) {
     const filteredData = allPokemonData.filter(pokemon =>
         pokemon.name.includes(query)
     );
 
-    // 타입 필터 적용
-    const filteredByType = filteredData.filter(pokemon =>
-        Array.from(activeTypeFilters).every(type =>
-            pokemon.types.map(t => t.type.name).includes(type)
-        )
-    );
+    const selectedPrimaryType = document.getElementById('primaryTypeSelect').value;
+    const selectedSecondaryType = document.getElementById('secondaryTypeSelect').value;
+
+    const filteredByType = filteredData.filter(pokemon => {
+        const types = pokemon.types.map(t => t.type.name);
+        const primaryMatch = !selectedPrimaryType || types.includes(selectedPrimaryType);
+        const secondaryMatch = !selectedSecondaryType || types.includes(selectedSecondaryType);
+        return primaryMatch && secondaryMatch;
+    });
 
     renderPokemonList(filteredByType);
 }
 
-// 타입 필터링 토글
-function toggleTypeFilter(type) {
-    if (activeTypeFilters.has(type)) {
-        activeTypeFilters.delete(type);
-    } else {
-        activeTypeFilters.add(type);
-    }
-    filterPokemonList(document.getElementById('searchInput').value.toLowerCase());
-}
-
-// 모든 타입 목록 가져오기
 function fetchAllTypes() {
     const apiUrl = 'https://pokeapi.co/api/v2/type';
     return fetch(apiUrl)
         .then(response => response.json())
         .then(data => data.results)
         .catch(error => console.error('Error fetching Pokemon types:', error));
+}
+
+function updateSecondaryTypeSelect(primaryType) {
+    const secondarySelect = document.getElementById('secondaryTypeSelect');
+    secondarySelect.innerHTML = '<option value="">세부 타입 선택</option>'; // 초기화
+
+    if (primaryType) {
+        fetchAllTypes().then(types => {
+            types.forEach(type => {
+                if (type.name !== primaryType) {
+                    const option = document.createElement('option');
+                    option.value = type.name;
+                    option.textContent = type.name;
+                    secondarySelect.appendChild(option);
+                }
+            });
+        });
+
+        secondarySelect.disabled = false; // 활성화
+    } else {
+        secondarySelect.disabled = true; // 비활성화
+    }
 }
