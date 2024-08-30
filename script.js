@@ -1,7 +1,28 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded and parsed');
     fetchPokemonList(); // 페이지 로드 시 포켓몬 리스트를 불러옵니다.
+
+    // 검색 인풋 이벤트 리스너 추가
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        filterPokemonList(query);
+    });
+
+    // 타입별 필터링 버튼 생성 및 이벤트 리스너 추가
+    fetchAllTypes().then(types => {
+        const filterContainer = document.getElementById('typeFilters');
+        types.forEach(type => {
+            const button = document.createElement('button');
+            button.textContent = type.name;
+            button.className = 'type-filter-button';
+            button.addEventListener('click', () => toggleTypeFilter(type.name));
+            filterContainer.appendChild(button);
+        });
+    });
 });
+
+let allPokemonData = []; // 전체 포켓몬 데이터 저장용
+let activeTypeFilters = new Set(); // 활성화된 타입 필터 저장용
 
 function fetchPokemonList() {
     console.log('Fetching Pokemon list...');
@@ -18,28 +39,38 @@ function fetchPokemonList() {
             const fetches = data.results.map(pokemon => fetch(pokemon.url).then(res => res.json()));
 
             Promise.all(fetches).then(pokemonDataArray => {
+                // 전체 포켓몬 데이터 저장
+                allPokemonData = pokemonDataArray;
+
                 // ID 순으로 정렬
                 pokemonDataArray.sort((a, b) => a.id - b.id);
                 
-                pokemonDataArray.forEach(pokemonData => {
-                    const pokemonCard = document.createElement('div');
-                    pokemonCard.className = 'pokemon-card';
-                    pokemonCard.dataset.name = pokemonData.name;
-
-                    pokemonCard.innerHTML = `
-                        <img src="${pokemonData.sprites.front_default}" alt="${pokemonData.name}" />
-                        <p>${pokemonData.id}. ${pokemonData.name}</p>
-                    `;
-
-                    pokemonCard.addEventListener('click', () => {
-                        fetchPokemonDetails(pokemonData.name);
-                    });
-
-                    pokemonList.appendChild(pokemonCard);
-                });
+                renderPokemonList(pokemonDataArray);
             });
         })
         .catch(error => console.error('Error fetching the Pokemon list:', error));
+}
+
+function renderPokemonList(pokemonDataArray) {
+    const pokemonList = document.getElementById('pokemonList');
+    pokemonList.innerHTML = ''; // 기존 목록 초기화
+
+    pokemonDataArray.forEach(pokemonData => {
+        const pokemonCard = document.createElement('div');
+        pokemonCard.className = 'pokemon-card';
+        pokemonCard.dataset.name = pokemonData.name;
+
+        pokemonCard.innerHTML = `
+            <img src="${pokemonData.sprites.front_default}" alt="${pokemonData.name}" />
+            <p>${pokemonData.id}. ${pokemonData.name}</p>
+        `;
+
+        pokemonCard.addEventListener('click', () => {
+            fetchPokemonDetails(pokemonData.name);
+        });
+
+        pokemonList.appendChild(pokemonCard);
+    });
 }
 
 function fetchPokemonDetails(name) {
@@ -74,4 +105,39 @@ function fetchPokemonDetails(name) {
             `;
         })
         .catch(error => console.error('Error fetching Pokemon details:', error));
+}
+
+// 검색어에 맞춰 포켓몬 목록 필터링
+function filterPokemonList(query) {
+    const filteredData = allPokemonData.filter(pokemon =>
+        pokemon.name.includes(query)
+    );
+
+    // 타입 필터 적용
+    const filteredByType = filteredData.filter(pokemon =>
+        Array.from(activeTypeFilters).every(type =>
+            pokemon.types.map(t => t.type.name).includes(type)
+        )
+    );
+
+    renderPokemonList(filteredByType);
+}
+
+// 타입 필터링 토글
+function toggleTypeFilter(type) {
+    if (activeTypeFilters.has(type)) {
+        activeTypeFilters.delete(type);
+    } else {
+        activeTypeFilters.add(type);
+    }
+    filterPokemonList(document.getElementById('searchInput').value.toLowerCase());
+}
+
+// 모든 타입 목록 가져오기
+function fetchAllTypes() {
+    const apiUrl = 'https://pokeapi.co/api/v2/type';
+    return fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => data.results)
+        .catch(error => console.error('Error fetching Pokemon types:', error));
 }
