@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // 타입 드롭다운 이벤트 리스너 추가
     fetchAllTypes().then(types => {
         const primarySelect = document.getElementById('primaryTypeSelect');
+        if (!primarySelect) {
+            console.error('Primary type select element not found');
+            return;
+        }
         types.forEach(type => {
             const option = document.createElement('option');
             option.value = type.name;
@@ -54,6 +58,10 @@ function fetchPokemonList() {
 
 function renderPokemonList(pokemonDataArray) {
     const pokemonList = document.getElementById('pokemonList');
+    if (!pokemonList) {
+        console.error('Pokemon list element not found');
+        return;
+    }
     pokemonList.innerHTML = '';
 
     pokemonDataArray.forEach(pokemonData => {
@@ -80,6 +88,10 @@ function fetchPokemonDetails(name) {
         .then(response => response.json())
         .then(data => {
             const pokemonDetails = document.getElementById('pokemonDetails');
+            if (!pokemonDetails) {
+                console.error('Pokemon details element not found');
+                return;
+            }
             pokemonDetails.innerHTML = `
                 <h2>${data.id}. ${data.name}</h2>
                 <img src="${data.sprites.front_default}" alt="${data.name}" />
@@ -137,6 +149,10 @@ function fetchAllTypes() {
 
 function updateSecondaryTypeSelect(primaryType) {
     const secondarySelect = document.getElementById('secondaryTypeSelect');
+    if (!secondarySelect) {
+        console.error('Secondary type select element not found');
+        return;
+    }
     secondarySelect.innerHTML = '<option value="">세부 타입 선택</option>'; // 초기화
 
     if (primaryType) {
