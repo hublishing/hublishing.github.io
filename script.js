@@ -15,26 +15,28 @@ function fetchPokemonList() {
         })
         .then(data => {
             const pokemonList = document.getElementById('pokemonList');
-            data.results.forEach(pokemon => {
-                const pokemonCard = document.createElement('div');
-                pokemonCard.className = 'pokemon-card';
-                pokemonCard.dataset.name = pokemon.name;
+            const fetches = data.results.map(pokemon => fetch(pokemon.url).then(res => res.json()));
 
-                // 이미지 URL을 얻기 위해 각 포켓몬의 세부 정보를 가져옴
-                fetch(pokemon.url)
-                    .then(res => res.json())
-                    .then(pokemonData => {
-                        pokemonCard.innerHTML = `
-                            <img src="${pokemonData.sprites.front_default}" alt="${pokemon.name}" />
-                            <p>${pokemon.name}</p>
-                        `;
+            Promise.all(fetches).then(pokemonDataArray => {
+                // ID 순으로 정렬
+                pokemonDataArray.sort((a, b) => a.id - b.id);
+                
+                pokemonDataArray.forEach(pokemonData => {
+                    const pokemonCard = document.createElement('div');
+                    pokemonCard.className = 'pokemon-card';
+                    pokemonCard.dataset.name = pokemonData.name;
 
-                        pokemonCard.addEventListener('click', () => {
-                            fetchPokemonDetails(pokemon.name);
-                        });
+                    pokemonCard.innerHTML = `
+                        <img src="${pokemonData.sprites.front_default}" alt="${pokemonData.name}" />
+                        <p>${pokemonData.name} (ID: ${pokemonData.id})</p>
+                    `;
 
-                        pokemonList.appendChild(pokemonCard);
+                    pokemonCard.addEventListener('click', () => {
+                        fetchPokemonDetails(pokemonData.name);
                     });
+
+                    pokemonList.appendChild(pokemonCard);
+                });
             });
         })
         .catch(error => console.error('Error fetching the Pokemon list:', error));
@@ -54,13 +56,17 @@ function fetchPokemonDetails(name) {
             console.log('Pokemon details:', data);
             const pokemonDetails = document.getElementById('pokemonDetails');
             pokemonDetails.innerHTML = `
-                <h2>${data.name}</h2>
+                <h2>${data.name} (ID: ${data.id})</h2>
                 <img src="${data.sprites.front_default}" alt="${data.name}" />
                 <p>Height: ${data.height}</p>
                 <p>Weight: ${data.weight}</p>
                 <p>Base Experience: ${data.base_experience}</p>
                 <p>Abilities: ${data.abilities.map(ability => ability.ability.name).join(', ')}</p>
                 <p>Types: ${data.types.map(type => type.type.name).join(', ')}</p>
+                <p>Forms: ${data.forms.map(form => form.name).join(', ')}</p>
+                <p>Game Indices: ${data.game_indices.map(index => index.version.name).join(', ')}</p>
+                <p>Location Encounters: ${data.location_area_encounters}</p>
+                <p>Moves: ${data.moves.map(move => move.move.name).slice(0, 5).join(', ')}...</p> <!-- 처음 5개의 기술만 표시 -->
                 <p>Stats:</p>
                 <ul>
                     ${data.stats.map(stat => `<li>${stat.stat.name}: ${stat.base_stat}</li>`).join('')}
