@@ -70,3 +70,25 @@ body {
 .pokemon-details h2 {
     margin: 0;
 }
+#searchInput {
+    width: 80%; /* 검색 인풋의 넓이 줄임 */
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.type-filter-button {
+    margin: 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f4f4f4;
+    cursor: pointer;
+}
+
+.type-filter-button.active {
+    background-color: #4CAF50;
+    color: white;
+    border: 1px solid #4CAF50;
+}
