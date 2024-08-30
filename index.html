@@ -10,9 +10,18 @@
     <div class="container">
         <div class="left-panel">
             <input type="text" id="searchInput" placeholder="포켓몬 검색 (예: pikachu)" />
-            <div id="typeFilters" class="type-filters">
-                <!-- 타입별 필터링 버튼이 동적으로 추가됩니다 -->
+            <div id="typeSelectors">
+                <select id="primaryTypeSelect">
+                    <option value="">타입 선택</option>
+                    <!-- 첫 번째 드롭다운에 타입 옵션이 동적으로 추가됩니다 -->
+                </select>
+
+                <select id="secondaryTypeSelect" disabled>
+                    <option value="">세부 타입 선택</option>
+                    <!-- 두 번째 드롭다운에 서브 타입 옵션이 동적으로 추가됩니다 -->
+                </select>
             </div>
+
             <div class="pokemon-list" id="pokemonList">
                 <!-- 포켓몬 카드가 여기에 표시됩니다 -->
             </div>
