@@ -6,68 +6,63 @@ body {
 }
 
 .container {
+    display: flex;
+    height: 100vh;
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-header {
-    display: flex;
-    justify-content: center;
-    padding: 10px 0;
+.left-panel, .right-panel {
+    padding: 20px;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+}
+
+.left-panel {
+    width: 30%;
+    overflow-y: auto;
+    border-right: 1px solid #ddd;
+}
+
+.right-panel {
+    width: 70%;
+    overflow-y: auto;
 }
 
 #searchInput {
-    width: 300px;
+    width: 100%;
     padding: 10px;
+    margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
 
-#searchButton {
-    padding: 10px;
-    margin-left: 10px;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.content {
-    display: flex;
-    margin-top: 20px;
-}
-
 .pokemon-list {
-    flex: 2;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
 
 .pokemon-card {
-    width: 150px;
+    width: 100px;
     padding: 10px;
-    background-color: white;
+    background-color: #f9f9f9;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     text-align: center;
     cursor: pointer;
+    flex-grow: 1;
 }
 
 .pokemon-details {
-    flex: 1;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-left: 20px;
+    text-align: center;
 }
 
 .pokemon-details img {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
 }
 
 .pokemon-details h2 {
