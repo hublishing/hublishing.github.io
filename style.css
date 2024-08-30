@@ -12,12 +12,14 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding-top: 50px;
+    gap:20px;
 }
 
 .left-panel, .right-panel {
     padding: 20px;
     background-color: #fff;
     border-right: 1px solid #ddd;
+    border-radius: 10px;
 }
 
 .left-panel {
