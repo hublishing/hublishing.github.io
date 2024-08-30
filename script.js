@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
             filterPokemonList(document.getElementById('searchInput').value.toLowerCase());
         });
     });
+
+    // 세부 타입 드롭다운 이벤트 리스너 추가
+    const secondarySelect = document.getElementById('secondaryTypeSelect');
+    secondarySelect.addEventListener('change', () => {
+        filterPokemonList(document.getElementById('searchInput').value.toLowerCase());
+    });
 });
 
 let allPokemonData = []; // 전체 포켓몬 데이터 저장용
