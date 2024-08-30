@@ -11,6 +11,7 @@ body {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
+    padding-top: 50px;
 }
 
 .left-panel, .right-panel {
@@ -20,13 +21,13 @@ body {
 }
 
 .left-panel {
-    width: 30%;
+    width: 60%;
     overflow-y: auto;
     border-right: 1px solid #ddd;
 }
 
 .right-panel {
-    width: 70%;
+    width: 40%;
     overflow-y: auto;
 }
 
