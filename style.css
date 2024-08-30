@@ -32,11 +32,12 @@ body {
 }
 
 #searchInput {
-    width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    height: 30px;
+    width: 40%;
 }
 
 #typeSelectors {
@@ -46,8 +47,9 @@ body {
 }
 
 #primaryTypeSelect, #secondaryTypeSelect {
-    width: 45%;
-    padding: 5px;
+    width: 120px;
+    padding: 10px;
+    height: 50px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f4f4f4;
@@ -83,4 +85,6 @@ body {
 .pokemon-details h2 {
     margin: 0;
 }
-.pokeinfo {}
+.pokeinfo {    display: flex;
+    justify-content: space-between;
+    gap: 20px;}
