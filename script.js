@@ -28,7 +28,7 @@ function fetchPokemonList() {
 
                     pokemonCard.innerHTML = `
                         <img src="${pokemonData.sprites.front_default}" alt="${pokemonData.name}" />
-                        <p>${pokemonData.name} (ID: ${pokemonData.id})</p>
+                        <p>${pokemonData.id}. ${pokemonData.name}</p>
                     `;
 
                     pokemonCard.addEventListener('click', () => {
@@ -56,7 +56,7 @@ function fetchPokemonDetails(name) {
             console.log('Pokemon details:', data);
             const pokemonDetails = document.getElementById('pokemonDetails');
             pokemonDetails.innerHTML = `
-                <h2>${data.name} (ID: ${data.id})</h2>
+                <h2>${data.id}. ${data.name}</h2>
                 <img src="${data.sprites.front_default}" alt="${data.name}" />
                 <p>Height: ${data.height}</p>
                 <p>Weight: ${data.weight}</p>
