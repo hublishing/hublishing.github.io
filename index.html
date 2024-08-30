@@ -4,12 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokemon API Test</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Pokemon API Test</h1>
-    <input type="text" id="pokemonName" placeholder="Enter Pokemon name" />
-    <button id="fetchButton">Fetch Pokemon</button>
-    <div id="pokemonData"></div>
+    <div class="container">
+        <header>
+            <input type="text" id="searchInput" placeholder="포켓몬 검색 (예: pikachu)" />
+            <button id="searchButton">검색</button>
+        </header>
+        
+        <div class="content">
+            <div class="pokemon-list" id="pokemonList">
+                <!-- 포켓몬 카드가 여기에 표시됩니다 -->
+            </div>
+            
+            <div class="pokemon-details" id="pokemonDetails">
+                <!-- 선택한 포켓몬의 상세 정보가 여기에 표시됩니다 -->
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
